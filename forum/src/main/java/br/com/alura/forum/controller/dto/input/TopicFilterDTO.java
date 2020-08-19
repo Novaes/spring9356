@@ -1,5 +1,7 @@
 package br.com.alura.forum.controller.dto.input;
 
+
+import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
 import lombok.Getter;
@@ -13,7 +15,6 @@ import java.util.ArrayList;
 @Setter
 public class TopicFilterDTO {
 
-    /*MODELO ANEMICO*/
     private String categoryName;
     private TopicStatus status;
     private String username;

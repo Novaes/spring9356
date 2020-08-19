@@ -24,6 +24,8 @@ public class TopicController {
         this.topicDao = topicDao;
     }
 
+
+    // possíveis casos:
     // 1 - sem nenhum filtro = retorna todos os registros check
     // 2 - categoryName=Java = retornar com o filtro de categoria
     // 3 - status=Solved = retorna todos os resolvidos
