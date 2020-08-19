@@ -1,11 +1,9 @@
 package br.com.alura.forum.controller;
 
 
+import br.com.alura.forum.controller.dto.input.TopicFilterDTO;
 import br.com.alura.forum.controller.dto.output.TopicBriefOutputDTO;
 import br.com.alura.forum.dao.TopicDao;
-import br.com.alura.forum.model.Category;
-import br.com.alura.forum.model.Course;
-import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,15 +24,17 @@ public class TopicController {
         this.topicDao = topicDao;
     }
 
+    // 1 - sem nenhum filtro = retorna todos os registros check
+    // 2 - categoryName=Java = retornar com o filtro de categoria
+    // 3 - status=Solved = retorna todos os resolvidos
+    // 4 - categoryName=Java e status Solved =
+
     @ResponseBody
     @GetMapping(value = "/api/topics", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<TopicBriefOutputDTO> listTopics() {
-        Category subcategory = new Category("Java", new Category("Programação"));
-        Course javaComSpring = new Course("Java com Spring", subcategory);
-        User user = new User("Maroto", "marotinho@gmail.com", "123456");
-        Topic topic = new Topic("Problema ao configurar o spring", "erro ao fazer o start da aplicação", user, javaComSpring);
+    public List<TopicBriefOutputDTO> listTopics(TopicFilterDTO topicFilterDTO) {
 
-        return TopicBriefOutputDTO.listFromTopics(topicDao.findAll());
+        List<Topic> topics = topicDao.findAll(topicFilterDTO.buildCriteria());
+        return TopicBriefOutputDTO.listFromTopics(topics);
 
     }
 }
