@@ -2,7 +2,6 @@ package br.com.alura.forum.controller.dto.output;
 
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.Duration;
