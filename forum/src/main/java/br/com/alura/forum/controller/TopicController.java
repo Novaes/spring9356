@@ -5,11 +5,11 @@ import br.com.alura.forum.controller.dto.input.NewTopicInputDTO;
 import br.com.alura.forum.controller.dto.input.TopicFilterDTO;
 import br.com.alura.forum.controller.dto.output.DashboardItemInfoDTO;
 import br.com.alura.forum.controller.dto.output.TopicBriefOutputDTO;
+import br.com.alura.forum.controller.dto.output.TopicOutputDTO;
 import br.com.alura.forum.dao.CategoryRepository;
 import br.com.alura.forum.dao.CourseDao;
 import br.com.alura.forum.dao.TopicDao;
 import br.com.alura.forum.model.Category;
-import br.com.alura.forum.model.Course;
 import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
@@ -20,7 +20,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
@@ -37,11 +36,11 @@ public class TopicController {
     private CourseDao courseDao;
     private CategoryRepository categoryRepository;
 
-    public TopicController(TopicDao topicDao, CategoryRepository categoryRepository) {
+    public TopicController(TopicDao topicDao, CourseDao courseDao, CategoryRepository categoryRepository) {
         this.topicDao = topicDao;
+        this.courseDao = courseDao;
         this.categoryRepository = categoryRepository;
     }
-
 
     @GetMapping
     public Page<TopicBriefOutputDTO> listTopics(TopicFilterDTO topicFilterDTO,
@@ -66,13 +65,14 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<TopicBriefOutputDTO> createTopic(@RequestBody NewTopicInputDTO newTopic,
-                                             @AuthenticationPrincipal User user,
-                                             UriComponentsBuilder uriComponentsBuilder) {
-        Topic savedTopic = topicDao.save(newTopic.toTopic(courseDao, user));
+    public ResponseEntity<TopicOutputDTO> createTopic(@RequestBody NewTopicInputDTO newTopic,
+                                                      @AuthenticationPrincipal User user,
+                                                      UriComponentsBuilder uriComponentsBuilder) {
+        Topic savedTopic = newTopic.toTopic(courseDao, user);
+        topicDao.save(savedTopic);
         URI uri = uriComponentsBuilder.path("api/topics/{id}")
                 .buildAndExpand(savedTopic.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(new TopicBriefOutputDTO(savedTopic));
+        return ResponseEntity.created(uri).body(new TopicOutputDTO(savedTopic));
     }
 }

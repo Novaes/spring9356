@@ -5,12 +5,13 @@ import br.com.alura.forum.model.topic.domain.TopicStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
 
-public interface TopicDao extends JpaRepository<Topic, Long>, JpaSpecificationExecutor<Topic> {
+public interface TopicDao extends Repository<Topic, Long>, JpaSpecificationExecutor<Topic> {
 
     @Query("select t from Topic t") // JPQL
     List<Topic> list();
@@ -40,6 +41,8 @@ public interface TopicDao extends JpaRepository<Topic, Long>, JpaSpecificationEx
             + "WHERE category.id = :categoryId AND topic.creationInstant > :lastWeek")
     Integer countLastWeekTopicsByCategoryId(@Param("categoryId") Long categoryId,
                                             @Param("lastWeek")Instant lastWeek);
+
+    void save(Topic topic);
 
 
 

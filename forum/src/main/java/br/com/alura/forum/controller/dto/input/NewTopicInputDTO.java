@@ -7,8 +7,6 @@ import br.com.alura.forum.model.topic.domain.Topic;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Optional;
-
 @Getter
 @Setter
 public class NewTopicInputDTO {
