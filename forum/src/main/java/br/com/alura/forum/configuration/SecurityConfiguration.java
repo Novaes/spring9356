@@ -1,6 +1,9 @@
 package br.com.alura.forum.configuration;
 
 
+import br.com.alura.forum.security.JwtAuthenticationFilter;
+import br.com.alura.forum.security.JwtAuthenticationHandler;
+import br.com.alura.forum.service.TokenService;
 import br.com.alura.forum.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,16 +16,20 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private UserService userService;
+    private TokenService tokenService;
 
-    public SecurityConfiguration(UserService userService) {
+    public SecurityConfiguration(UserService userService, TokenService tokenService) {
         this.userService = userService;
+        this.tokenService = tokenService;
     }
+
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -32,7 +39,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/api/topics/**").permitAll()
+                .antMatchers(HttpMethod.GET,"/api/topics/**").permitAll()
                 .antMatchers("/api/auth/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -40,7 +47,12 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .and()
                     .csrf().disable()
                 .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                    .addFilterBefore(new JwtAuthenticationFilter(tokenService, userService),
+                            UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling()
+                    .authenticationEntryPoint(new JwtAuthenticationHandler());
 
     }
 

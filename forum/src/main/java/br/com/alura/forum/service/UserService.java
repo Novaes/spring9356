@@ -23,4 +23,9 @@ public class UserService implements UserDetailsService {
         Optional<User> user = userDao.findByEmail(username);
         return user.orElseThrow(() -> new UsernameNotFoundException("Não foi possível autenticar, revise suas credenciais"));
     }
+
+    public User loadById(Long userId) {
+        Optional<User> user = userDao.findById(userId);
+        return user.orElseThrow(() -> new UsernameNotFoundException("Não foi possível autenticar, revise suas credenciais"));
+    }
 }
