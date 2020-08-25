@@ -7,11 +7,23 @@ import br.com.alura.forum.model.topic.domain.Topic;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
 @Getter
 @Setter
 public class NewTopicInputDTO {
-    public String shortDescription;
+
+    @NotBlank
+    @Size(min = 20, max = 250)
+    public String shortDescription; //"a"
+
+    @NotBlank
+    @Size(min = 20, max = 250)
     public String content;
+
+    @NotBlank
+    @Size(min = 20, max = 100)
     public String courseName;
 
     public Topic toTopic(CourseDao courseDao, User loggedUser) {
