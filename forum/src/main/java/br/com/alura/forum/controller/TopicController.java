@@ -1,24 +1,29 @@
 package br.com.alura.forum.controller;
 
 
+import br.com.alura.forum.controller.dto.input.NewTopicInputDTO;
 import br.com.alura.forum.controller.dto.input.TopicFilterDTO;
 import br.com.alura.forum.controller.dto.output.DashboardItemInfoDTO;
 import br.com.alura.forum.controller.dto.output.TopicBriefOutputDTO;
+import br.com.alura.forum.controller.dto.output.TopicOutputDTO;
 import br.com.alura.forum.dao.CategoryRepository;
+import br.com.alura.forum.dao.CourseDao;
 import br.com.alura.forum.dao.TopicDao;
 import br.com.alura.forum.model.Category;
+import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,13 +33,14 @@ import java.util.stream.Collectors;
 public class TopicController {
 
     private TopicDao topicDao;
+    private CourseDao courseDao;
     private CategoryRepository categoryRepository;
 
-    public TopicController(TopicDao topicDao, CategoryRepository categoryRepository) {
+    public TopicController(TopicDao topicDao, CourseDao courseDao, CategoryRepository categoryRepository) {
         this.topicDao = topicDao;
+        this.courseDao = courseDao;
         this.categoryRepository = categoryRepository;
     }
-
 
     @GetMapping
     public Page<TopicBriefOutputDTO> listTopics(TopicFilterDTO topicFilterDTO,
@@ -56,5 +62,17 @@ public class TopicController {
             return new DashboardItemInfoDTO(category, allTopics, lastWeek, notAnswered);
         }).collect(Collectors.toList());
 
+    }
+
+    @PostMapping
+    public ResponseEntity<TopicOutputDTO> createTopic(@RequestBody NewTopicInputDTO newTopic,
+                                                      @AuthenticationPrincipal User user,
+                                                      UriComponentsBuilder uriComponentsBuilder) {
+        Topic savedTopic = newTopic.toTopic(courseDao, user);
+        topicDao.save(savedTopic);
+        URI uri = uriComponentsBuilder.path("api/topics/{id}")
+                .buildAndExpand(savedTopic.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(new TopicOutputDTO(savedTopic));
     }
 }
