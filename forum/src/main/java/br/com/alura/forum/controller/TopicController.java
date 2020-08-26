@@ -13,19 +13,17 @@ import br.com.alura.forum.model.Category;
 import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
+import br.com.alura.forum.validator.NewTopicInputDTOValidator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
-
-import java.net.URI;
 import javax.validation.Valid;
 import java.net.URI;
 import java.time.Instant;
@@ -80,6 +78,11 @@ public class TopicController {
                 .buildAndExpand(savedTopic.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new TopicOutputDTO(savedTopic));
+    }
+
+    @InitBinder("newTopicInputDTO")
+    public void initBinder(WebDataBinder binder, @AuthenticationPrincipal User user) {
+        binder.addValidators(new NewTopicInputDTOValidator(topicDao, user));
     }
 
 }
