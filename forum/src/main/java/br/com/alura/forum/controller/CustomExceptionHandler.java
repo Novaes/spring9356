@@ -2,7 +2,10 @@ package br.com.alura.forum.controller;
 
 
 import br.com.alura.forum.controller.dto.output.ErrorOutputDTO;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -16,7 +19,10 @@ import java.util.stream.Collectors;
 
 @ControllerAdvice(basePackages = "br.com.alura.forum.controller")
 @Slf4j
+@AllArgsConstructor
 public class CustomExceptionHandler {
+
+    private MessageSource messageSource;
 
     @ExceptionHandler({Exception.class, NullPointerException.class})
     public ResponseEntity erro500(Exception ex) {
@@ -34,7 +40,8 @@ public class CustomExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity badRequest(MethodArgumentNotValidException ex) {
         List<ErrorOutputDTO> errors = ex.getBindingResult().getFieldErrors()
-                .stream().map(fieldError -> new ErrorOutputDTO(fieldError.getField(), fieldError.getDefaultMessage()))
+                .stream().map(fieldError -> new ErrorOutputDTO(fieldError.getField(),
+                        messageSource.getMessage(fieldError, LocaleContextHolder.getLocale())))
                 .collect(Collectors.toList());
 
         return ResponseEntity.badRequest().body(errors);

@@ -1,5 +1,6 @@
 package br.com.alura.forum.dao;
 
+import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -44,6 +45,8 @@ public interface TopicDao extends Repository<Topic, Long>, JpaSpecificationExecu
 
     void save(Topic topic);
 
+
+    List<Topic> findByOwnerAndCreationInstantAfterOrderByCreationInstantAsc(User owner, Instant oneHourAgo);
 
 
 }
