@@ -18,10 +18,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+
+import java.net.URI;
+import javax.validation.Valid;
 import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -65,9 +70,10 @@ public class TopicController {
     }
 
     @PostMapping
-    public ResponseEntity<TopicOutputDTO> createTopic(@RequestBody NewTopicInputDTO newTopic,
+    public ResponseEntity<TopicOutputDTO> createTopic(@Valid @RequestBody NewTopicInputDTO newTopic,
                                                       @AuthenticationPrincipal User user,
                                                       UriComponentsBuilder uriComponentsBuilder) {
+
         Topic savedTopic = newTopic.toTopic(courseDao, user);
         topicDao.save(savedTopic);
         URI uri = uriComponentsBuilder.path("api/topics/{id}")
@@ -75,4 +81,5 @@ public class TopicController {
 
         return ResponseEntity.created(uri).body(new TopicOutputDTO(savedTopic));
     }
+
 }
