@@ -1,9 +1,8 @@
-package br.com.alura.forum.dao;
+package br.com.alura.forum.repository;
 
 import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
@@ -11,8 +10,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
-public interface TopicDao extends Repository<Topic, Long>, JpaSpecificationExecutor<Topic> {
+public interface TopicRepository extends Repository<Topic, Long>, JpaSpecificationExecutor<Topic> {
 
     @Query("select t from Topic t") // JPQL
     List<Topic> list();
@@ -49,4 +49,5 @@ public interface TopicDao extends Repository<Topic, Long>, JpaSpecificationExecu
     List<Topic> findByOwnerAndCreationInstantAfterOrderByCreationInstantAsc(User owner, Instant oneHourAgo);
 
 
+    Optional<Topic> findById(Long topicId);
 }

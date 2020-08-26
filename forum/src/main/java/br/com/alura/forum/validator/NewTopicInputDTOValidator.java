@@ -1,7 +1,7 @@
 package br.com.alura.forum.validator;
 
 import br.com.alura.forum.controller.dto.input.NewTopicInputDTO;
-import br.com.alura.forum.dao.TopicDao;
+import br.com.alura.forum.repository.TopicRepository;
 import br.com.alura.forum.model.PossibleSpam;
 import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
@@ -14,11 +14,11 @@ import java.util.List;
 
 public class NewTopicInputDTOValidator implements Validator {
 
-    private TopicDao topicDao;
+    private TopicRepository topicRepository;
     private User loggedUser;
 
-    public NewTopicInputDTOValidator(TopicDao topicDao, User loggedUser) {
-        this.topicDao = topicDao;
+    public NewTopicInputDTOValidator(TopicRepository topicRepository, User loggedUser) {
+        this.topicRepository = topicRepository;
         this.loggedUser = loggedUser;
     }
 
@@ -32,7 +32,7 @@ public class NewTopicInputDTOValidator implements Validator {
     @Override
     public void validate(Object newInputTopicDTO, Errors errors) {
         Instant oneHourAgo = Instant.now().minus(1, ChronoUnit.HOURS);
-        List<Topic> topicsCreated = topicDao.findByOwnerAndCreationInstantAfterOrderByCreationInstantAsc(loggedUser,
+        List<Topic> topicsCreated = topicRepository.findByOwnerAndCreationInstantAfterOrderByCreationInstantAsc(loggedUser,
                 oneHourAgo);
 
         PossibleSpam possibleSpam = new PossibleSpam(topicsCreated);

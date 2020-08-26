@@ -2,6 +2,7 @@ package br.com.alura.forum.controller;
 
 
 import br.com.alura.forum.controller.dto.output.ErrorOutputDTO;
+import br.com.alura.forum.exception.ResourceNotFound;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
@@ -45,6 +46,12 @@ public class CustomExceptionHandler {
                 .collect(Collectors.toList());
 
         return ResponseEntity.badRequest().body(errors);
+    }
+
+    @ExceptionHandler(ResourceNotFound.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void notFound(ResourceNotFound ex) {
+        log.info(ex.getMessage());
     }
 
 }
