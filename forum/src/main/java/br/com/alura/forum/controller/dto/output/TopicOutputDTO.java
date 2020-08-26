@@ -5,6 +5,9 @@ import br.com.alura.forum.model.topic.domain.TopicStatus;
 import lombok.Getter;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 public class TopicOutputDTO {
@@ -13,7 +16,7 @@ public class TopicOutputDTO {
     private String shortDescription;
     private String content;
     private TopicStatus status;
-    private int numberOfResponses;
+    private Integer numberOfResponses;
     private Instant creationInstant;
     private Instant lastUpdate;
 
@@ -21,6 +24,9 @@ public class TopicOutputDTO {
     private String courseName;
     private String subcategoryName;
     private String categoryName;
+
+    private List<AnswerOutputDTO> answers = new ArrayList<>();
+
 
 
     public TopicOutputDTO(Topic topic) {
@@ -35,6 +41,8 @@ public class TopicOutputDTO {
         this.courseName = topic.getCourse().getName();
         this.subcategoryName = topic.getCourse().getSubcategoryName();
         this.categoryName = topic.getCourse().getCategoryName();
+        this.answers = topic.getAnswers().stream().map(AnswerOutputDTO::new).collect(Collectors.toList());
+
     }
 
 }
