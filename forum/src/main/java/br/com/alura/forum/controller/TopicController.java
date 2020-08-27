@@ -8,16 +8,17 @@ import br.com.alura.forum.controller.dto.output.AnswerOutputDTO;
 import br.com.alura.forum.controller.dto.output.DashboardItemInfoDTO;
 import br.com.alura.forum.controller.dto.output.TopicBriefOutputDTO;
 import br.com.alura.forum.controller.dto.output.TopicOutputDTO;
-import br.com.alura.forum.repository.AnswerRepository;
-import br.com.alura.forum.repository.CategoryRepository;
-import br.com.alura.forum.repository.CourseRepository;
-import br.com.alura.forum.repository.TopicRepository;
 import br.com.alura.forum.exception.ResourceNotFound;
 import br.com.alura.forum.model.Answer;
 import br.com.alura.forum.model.Category;
 import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
+import br.com.alura.forum.repository.AnswerRepository;
+import br.com.alura.forum.repository.CategoryRepository;
+import br.com.alura.forum.repository.CourseRepository;
+import br.com.alura.forum.repository.TopicRepository;
+import br.com.alura.forum.service.NewReplyProcessorService;
 import br.com.alura.forum.service.TopicService;
 import br.com.alura.forum.validator.NewTopicInputDTOValidator;
 import lombok.AllArgsConstructor;
@@ -35,9 +36,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -50,6 +49,7 @@ public class TopicController {
     private CategoryRepository categoryRepository;
     private AnswerRepository answerRepository;
     private TopicService topicService;
+    private NewReplyProcessorService newReplyProcessorService;
 
     @GetMapping
     public Page<TopicBriefOutputDTO> listTopics(TopicFilterDTO topicFilterDTO,
@@ -106,13 +106,10 @@ public class TopicController {
                                                         UriComponentsBuilder uriBuilder) {
         Topic topic = topicService.findById(topicId);
         Answer answer = input.toAnswer(topic, loggedUser);
-        answerRepository.save(answer);
-        Map<String, Long> pathVariables = new HashMap<>();
-        pathVariables.put("idDoTopico", topic.getId());
-        pathVariables.put("answerId", answer.getId());
+        newReplyProcessorService.execute(answer);
 
         URI uri = uriBuilder.path("api/topics/{idDoTopico}/answers/{answerId}")
-                .buildAndExpand(pathVariables).toUri();
+                .buildAndExpand(topic.getId(), answer.getId()).toUri();
 
         return ResponseEntity.created(uri).body(new AnswerOutputDTO(answer));
 
