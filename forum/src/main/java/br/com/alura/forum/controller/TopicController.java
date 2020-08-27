@@ -35,9 +35,7 @@ import javax.validation.Valid;
 import java.net.URI;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -97,25 +95,6 @@ public class TopicController {
                                                          @PathVariable("idAnswer") Long answerId) {
         Answer answer = answerRepository.findById(answerId).orElseThrow(() -> new ResourceNotFound("answer not found"));
         return ResponseEntity.ok(new AnswerOutputDTO(answer));
-    }
-
-    @PostMapping("{idDoTopico}/answers")
-    public ResponseEntity<AnswerOutputDTO> createAnswer(@PathVariable("idDoTopico") Long topicId,
-                                                        @Valid @RequestBody NewAnswerInputDTO input,
-                                                        @AuthenticationPrincipal User loggedUser,
-                                                        UriComponentsBuilder uriBuilder) {
-        Topic topic = topicService.findById(topicId);
-        Answer answer = input.toAnswer(topic, loggedUser);
-        answerRepository.save(answer);
-        Map<String, Long> pathVariables = new HashMap<>();
-        pathVariables.put("idDoTopico", topic.getId());
-        pathVariables.put("answerId", answer.getId());
-
-        URI uri = uriBuilder.path("api/topics/{idDoTopico}/answers/{answerId}")
-                .buildAndExpand(pathVariables).toUri();
-
-        return ResponseEntity.created(uri).body(new AnswerOutputDTO(answer));
-
     }
 
     @InitBinder("newTopicInputDTO")
