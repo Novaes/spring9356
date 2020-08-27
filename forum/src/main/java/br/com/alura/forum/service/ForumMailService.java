@@ -22,40 +22,42 @@ import java.time.format.DateTimeFormatter;
 @AllArgsConstructor
 public class ForumMailService {
 
-    private MailSender mailSender;
+    //private MailSender mailSender;
     private static final Logger logger = LoggerFactory.getLogger(ForumMailService.class);
 
     private JavaMailSender javaMailSender;
 
-    TemplateEngine templateEngine = new Context();
+    private TemplateEngine templateEngine;
 
-    @Async
-    public void sendNewReplyMail(Answer answer) {
-        SimpleMailMessage simpleMessage = new SimpleMailMessage();
-        simpleMessage.setTo(answer.getTopic().getOwnerEmail());
-        simpleMessage.setSubject("Novo comentário em " + answer.getTopic()
-                .getShortDescription());
-        simpleMessage.setText("Olá " + answer.getTopic().getOwnerName() + "\n\n" +
-                "Há uma nova mensagem no fórum! " + answer.getOwnerName() +
-                " comentou no tópico: " + answer.getTopic().getShortDescription());
-        try {
-            mailSender.send(simpleMessage);
-        } catch (MailException e) {
-            logger.error("Não foi possível enviar email para " + answer.getTopic()
-                    .getOwnerEmail(), e.getMessage());
-        }
-    }
+//    @Async
+//    public void sendNewReplyMail(Answer answer) {
+//
+//        SimpleMailMessage simpleMessage = new SimpleMailMessage();
+//        simpleMessage.setTo(answer.getTopic().getOwnerEmail());
+//        simpleMessage.setSubject("Novo comentário em " + answer.getTopic()
+//                .getShortDescription());
+//        simpleMessage.setText("Olá " + answer.getTopic().getOwnerName() + "\n\n" +
+//                "Há uma nova mensagem no fórum! " + answer.getOwnerName() +
+//                " comentou no tópico: " + answer.getTopic().getShortDescription());
+//        try {
+//            mailSender.send(simpleMessage);
+//        } catch (MailException e) {
+//            logger.error("Não foi possível enviar email para " + answer.getTopic()
+//                    .getOwnerEmail(), e.getMessage());
+//        }
+//    }
 
     @Async
     public void sendNewReplyMailMEME(Answer answer) {
         Topic answeredTopic = answer.getTopic();
+
         MimeMessagePreparator messagePreparator = (mimeMessage) -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setTo(answeredTopic.getOwnerEmail());
             messageHelper.setSubject("Novo comentário em: " + answeredTopic.getShortDescription());
             String messageContent = this.generateNewReplyEmailContent(answer);
             messageHelper.setText(messageContent, true);
-        }
+        };
 
         try {
             javaMailSender.send(messagePreparator);
@@ -72,8 +74,6 @@ public class ForumMailService {
         thymeleafContext.setVariable("topicShortDescription", answeredTopic.getShortDescription());
         thymeleafContext.setVariable("answerAuthor", answer.getOwnerName());
         thymeleafContext.setVariable("answerCreationInstant", getFormattedCreationTime(answer));
-        thymeleafContext.setVariable("answerContent", answer.getContent());
-        thymeleafContext.setVariable(template = "templates/email-template.html", thymeleafContext);
         thymeleafContext.setVariable("answerContent", answer.getContent());
         return this.templateEngine.process("email-template.html", thymeleafContext);
     }

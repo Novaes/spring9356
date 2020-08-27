@@ -43,7 +43,7 @@ public class AnswerController {
         pathVariables.put("idDoTopico", topic.getId());
         pathVariables.put("answerId", answer.getId());
 
-        forumMailService.sendNewReplyMail(answer);
+        forumMailService.sendNewReplyMailMEME(answer);
 
         URI uri = uriBuilder.path("api/topics/{idDoTopico}/answers/{answerId}")
                 .buildAndExpand(pathVariables).toUri();
