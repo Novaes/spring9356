@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Profile;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.mail.internet.MimeMessage;
 
 @Profile("dev")
 @Configuration
