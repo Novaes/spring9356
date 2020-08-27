@@ -1,32 +1,33 @@
 package br.com.alura.forum.service;
 
+import br.com.alura.forum.infra.NewReplyMailFactory;
 import br.com.alura.forum.model.Answer;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
-import org.springframework.mail.MailSender;
-import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class MailService {
 
-    private MailSender mailSender;
+    private JavaMailSender mailSender;
+    private NewReplyMailFactory newReplyMailFactory;
 
     @Async
     public void sendNewAnswerReply(Answer answer) {
-        SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setSubject("Dúvida respondida em " +   answer.getCreationTime());
-        mailMessage.setTo(answer.getTopic().getOwnerEmail());
-        mailMessage.setText("Aqui vai um texto legal do corpo do email");
 
         try {
-            mailSender.send(mailMessage);
+            mailSender.send(newReplyMailFactory.generateMailContent(answer));
         } catch (MailException ex) {
-            ex.printStackTrace();
+            log.error("Não foi possível enviar email para topico {} ex {} ", answer.getTopic().getShortDescription(), ex.getMessage());
         }
 
     }
+
+
 
 }
