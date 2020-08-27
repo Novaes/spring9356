@@ -23,7 +23,6 @@ public class NewTopicInputDTO {
     public String content;
 
     @NotBlank
-    @Size(min = 20, max = 100)
     public String courseName;
 
     public Topic toTopic(CourseRepository courseRepository, User loggedUser) {
