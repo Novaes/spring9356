@@ -4,7 +4,6 @@ class FetchAluraForumService {
 
     static get(resource) {
         const uri = `${BASE_URI}/${resource}`;
-        console.log(uri)
 
         const requestDetails = {
             method: 'GET',
