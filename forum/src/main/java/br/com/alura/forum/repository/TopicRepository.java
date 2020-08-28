@@ -1,5 +1,6 @@
 package br.com.alura.forum.repository;
 
+import br.com.alura.forum.model.TopicsOpenByCategory;
 import br.com.alura.forum.model.User;
 import br.com.alura.forum.model.topic.domain.Topic;
 import br.com.alura.forum.model.topic.domain.TopicStatus;
@@ -42,6 +43,16 @@ public interface TopicRepository extends Repository<Topic, Long>, JpaSpecificati
             + "WHERE category.id = :categoryId AND topic.creationInstant > :lastWeek")
     Integer countLastWeekTopicsByCategoryId(@Param("categoryId") Long categoryId,
                                             @Param("lastWeek")Instant lastWeek);
+
+
+    @Query("select new br.com.alura.forum.model.TopicsOpenByCategory(" +
+            "t.course.subcategory.category.name as categoryName, " +
+            "count(t) as quantity, " +
+            "now() as createdAt) from Topic t " +
+            "where t.status = :status " +
+            "group by t.course.subcategory.category")
+    List<TopicsOpenByCategory> findOpenTopicsByCategory(@Param("status")TopicStatus status);
+
 
     void save(Topic topic);
 
