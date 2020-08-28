@@ -35,7 +35,7 @@ public class RegisterUnansweredTopicsTask {
     }
 
     @Transactional
-    @Scheduled(fixedRate = 10000)
+    @Scheduled(cron = "0 0 20 * * *")
     public void registerOpenTopics() {
         log.info("running register unanswered topics");
         List<TopicsOpenByCategory> topics = topicRepository.findOpenTopicsByCategory(TopicStatus.NOT_ANSWERED);
