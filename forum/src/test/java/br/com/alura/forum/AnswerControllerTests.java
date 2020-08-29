@@ -71,6 +71,7 @@ public class AnswerControllerTests {
 
         this.jwt = this.tokenService.createToken(user);
     }
+    
 
 //    @Test
 //    public void shouldProcessSuccessfullyNewAnswerRequest() throws Exception {
