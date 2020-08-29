@@ -8,6 +8,7 @@ import br.com.alura.forum.repository.UserRepository;
 import br.com.alura.forum.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +53,7 @@ public class AnswerControllerTests {
 
     private MockMvc mockMvc;
 
+    @Before
     public void setup() throws RuntimeException {
         String rawPassword = "123456";
         User user = new User("Aluno da Alura", "aluno@gmail.com",
@@ -65,22 +67,36 @@ public class AnswerControllerTests {
         this.topicId = topic.getId();
 
         Authentication authentication = authManager.authenticate(
-            new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword));
-        this.jwt =this.tokenService.createToken(user);
+                new UsernamePasswordAuthenticationToken(user.getEmail(), rawPassword));
+
+        this.jwt = this.tokenService.createToken(user);
     }
 
+//    @Test
+//    public void shouldProcessSuccessfullyNewAnswerRequest() throws Exception {
+//        URI uri = new UriTemplate(ENDPOINT).expand(this.topicId);
+//        NewAnswerInputDTO inputDto = new NewAnswerInputDTO();
+//        inputDto.setContent("Não consigo subir o servidor");
+//        MockHttpServletRequestBuilder request = post(uri)
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .header("Authorization", "Bearer " + this.jwt)
+//                .content(new ObjectMapper().writeValueAsString(inputDto));
+//        this.mockMvc.perform(request)
+//                .andExpect(status().isCreated())
+//                .andExpect(content()
+//                        .string(containsString(inputDto.getContent())));
+//    }
+
     @Test
-    public void shouldProcessSuccessfullyNewAnswerRequest() throws Exception {
+    public void shouldRejectNewAnswerRequest() throws Exception {
         URI uri = new UriTemplate(ENDPOINT).expand(this.topicId);
         NewAnswerInputDTO inputDto = new NewAnswerInputDTO();
-        inputDto.setContent("Não consigo subir o servidor");
+        inputDto.setContent("bad");
         MockHttpServletRequestBuilder request = post(uri)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + this.jwt)
                 .content(new ObjectMapper().writeValueAsString(inputDto));
         this.mockMvc.perform(request)
-                .andExpect(status().isCreated())
-                .andExpect(content()
-                        .string(containsString(inputDto.getContent())));
+                .andExpect(status().isBadRequest());
     }
 }

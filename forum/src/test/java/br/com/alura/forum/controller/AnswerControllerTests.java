@@ -8,8 +8,12 @@ import br.com.alura.forum.repository.UserRepository;
 import br.com.alura.forum.service.TokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -36,14 +40,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @ActiveProfiles("test")
 @RunWith(SpringRunner.class)
-@AllArgsConstructor
+@Getter
+@Setter
 public class AnswerControllerTests {
 
     private static final String ENDPOINT = "/api/topics/{topicId}/answers";
 
+    @Autowired
     private TopicRepository topicRepository;
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
     private TokenService tokenService;
+    @Autowired
     private AuthenticationManager authManager;
 
     private Long topicId;
@@ -51,9 +60,10 @@ public class AnswerControllerTests {
 
     private MockMvc mockMvc;
 
+    @Before
     public void setup() throws RuntimeException {
         String rawPassword = "123456";
-        User user = new User("Aluno da Alura", "aluno@gmail.com",
+        User user = new User("Aluno da Alura", "aluno2@gmail.com",
                 new BCryptPasswordEncoder().encode(rawPassword));
         this.userRepository.save(user);
 
