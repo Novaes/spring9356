@@ -53,8 +53,7 @@ public interface TopicRepository extends Repository<Topic, Long>, JpaSpecificati
             "group by t.course.subcategory.category")
     List<OpenTopicsOnCategory> findOpenTopicsOnCategory();
 
-    void save(Topic topic);
-
+    Topic save(Topic topic);
 
     List<Topic> findByOwnerAndCreationInstantAfterOrderByCreationInstantAsc(User owner, Instant oneHourAgo);
 

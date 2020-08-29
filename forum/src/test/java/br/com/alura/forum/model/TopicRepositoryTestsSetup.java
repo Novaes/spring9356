@@ -1,4 +1,4 @@
-package br.com.alura.forum;
+package br.com.alura.forum.model;
 
 import br.com.alura.forum.model.Category;
 import br.com.alura.forum.model.Course;
