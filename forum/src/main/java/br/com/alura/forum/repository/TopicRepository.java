@@ -54,7 +54,7 @@ public interface TopicRepository extends Repository<Topic, Long>, JpaSpecificati
     List<TopicsOpenByCategory> findOpenTopicsByCategory(@Param("status")TopicStatus status);
 
 
-    void save(Topic topic);
+    Topic save(Topic topic);
 
 
     List<Topic> findByOwnerAndCreationInstantAfterOrderByCreationInstantAsc(User owner, Instant oneHourAgo);
